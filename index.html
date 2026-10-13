@@ -292,6 +292,13 @@ summary{cursor:pointer;opacity:.85}
 .rcard .rimg{display:block;width:100%;image-rendering:pixelated;margin:calc(var(--p) * 2) auto;box-shadow:0 0 0 var(--p) #0c0f2a}
 .dlockrow{display:flex;align-items:center;gap:calc(var(--p) * 3);justify-content:center;margin:calc(var(--p) * 2) 0}
 .dlockrow select{font:inherit}
+
+/* 타이틀 메뉴: 쯔꾸르식 글자 메뉴 */
+.panel.title .mlist{display:inline-flex;flex-direction:column;min-width:calc(var(--p) * 90);margin-top:calc(var(--p) * 3);padding:calc(var(--p) * 3) calc(var(--p) * 8);background:rgba(8,10,32,.78);box-shadow:0 0 0 var(--p) #0c0f2a,0 0 0 calc(var(--p) * 2) rgba(138,150,216,.55)}
+.panel.title .mbtn{width:auto;background:none;border:0;margin:0;padding:calc(var(--p) * 1.5) calc(var(--p) * 10);color:#c8cce8;text-shadow:var(--p) var(--p) 0 #0c0f2a}
+.panel.title .mbtn.sel,.panel.title .mbtn:hover{background:none;color:#ffd23f}
+.panel.title .mbtn.sel::before{left:calc(var(--p) * 1)}
+.panel.sub .mlist{margin-top:calc(var(--p) * 2)}
 </style>
 </head>
 <body>
@@ -837,11 +844,18 @@ const OBJ_DRAW = {
   },
   doorWood(o) {
     const X = o.x * T, Y = o.y * T;
-    px(OL, X + 1, Y + 1, 14, 31); px('#5a3a22', X + 2, Y + 2, 12, 30);
+    px(OL, X + 1, Y + 1, 14, 31); px('#4a2e1a', X + 2, Y + 2, 12, 30);
     if (o.open) { px('#1a1410', X + 3, Y + 3, 10, 29); px('rgba(255,240,200,.35)', X + 3, Y + 22, 10, 10); return; }
-    px('#9a6a3e', X + 3, Y + 3, 10, 29); px('#b07e4e', X + 3, Y + 3, 1, 29); px('#7a5030', X + 5, Y + 6, 6, 9); px('#7a5030', X + 5, Y + 19, 6, 10);
-    px('#e8c35a', X + 11, Y + 17, 1, 3);
-    if (o.locked) { px(OL, X + 6, Y + 15, 5, 5); px('#f2c14e', X + 7, Y + 16, 3, 3); }
+    // 판문: 세로 널판 + 가로 띠장 + 무쇠 장석 + 문고리
+    px('#8e5e36', X + 3, Y + 3, 10, 29);
+    for (const sx of [5, 8, 11]) px('#6a4224', X + sx, Y + 3, 1, 29);
+    for (const sx of [3, 6, 9, 12]) px('#a87446', X + sx, Y + 3, 1, 29);
+    px('#7a2e22', X + 3, Y + 3, 10, 1);
+    for (const by of [7, 25]) { px('#5a361c', X + 3, Y + by, 10, 2); px('#7a4c2a', X + 3, Y + by, 10, 1); for (const nx of [4, 7, 10]) px('#2a2622', X + nx, Y + by, 1, 1); }
+    px('#3a3632', X + 3, Y + 4, 2, 2); px('#3a3632', X + 3, Y + 28, 2, 2);
+    px('#3a3632', X + 9, Y + 15, 3, 1); px('#3a3632', X + 10, Y + 14, 1, 3);
+    px('#2a2622', X + 9, Y + 17, 1, 3); px('#2a2622', X + 11, Y + 17, 1, 3); px('#2a2622', X + 10, Y + 20, 1, 1); px('#6a6660', X + 9, Y + 17, 1, 1);
+    if (o.locked) { px(OL, X + 4, Y + 15, 6, 4); px('#d4a640', X + 5, Y + 16, 4, 2); px('#f2d070', X + 5, Y + 16, 4, 1); px(OL, X + 6, Y + 17, 1, 1); }
   },
   doorHanji(o) {
     const X = o.x * T, Y = o.y * T;
@@ -2020,13 +2034,18 @@ function openPause() {
 }
 // 자동 저장은 하지 않는다. 기록의 책(저장 지점)에서만 저장 슬롯에 적는다.
 function save() {}
+function openArchive() {
+  openMenu({ cls: 'sub', head: '<div class="ptitle">도감</div>', onEsc: toTitle, items: [
+    { label: '역사 카드 도감', fn: () => openCards(openArchive) }, { label: '엔딩 도감', fn: () => openEndings(openArchive) }, { label: '기록', fn: () => showRecords(openArchive) }, { label: '돌아가기', fn: toTitle }
+  ] });
+}
 function toTitle() {
   save(); mode = 'title'; hideDialog(); closeModal(); held = []; hudKey = ''; S = S && S.cleared ? null : S;
   loadMap('e1'); playBgm('title');
   const hasSave = getSlots().some(Boolean);
   openMenu({ cls: 'title',
     head: `<div class="tsub">시간을 건너는 역사 RPG</div><h1>한글 편지의 비밀</h1><div class="tdesc">외할머니 댁에서 찾은 흐릿한 한글 편지 두 장.<br>먹물 요정 먹콩을 따라 1441년부터 1598년까지, 편지에 담긴 마음을 찾아 떠나자.</div>`,
-    items: [{ label: '새로 시작', fn: askName }, hasSave && { label: '불러오기', fn: openLoad }, { label: '역사 카드 도감', fn: () => openCards(toTitle) }, { label: '엔딩 도감', fn: () => openEndings(toTitle) }, { label: '기록', fn: () => showRecords(toTitle) }, { label: '소리 설정', fn: () => openSound(toTitle) }].filter(Boolean),
+    items: [{ label: '새로 시작', fn: askName }, hasSave && { label: '불러오기', fn: openLoad }, { label: '도감', fn: openArchive }, { label: '설정', fn: () => openSound(toTitle) }].filter(Boolean),
     foot: '<div class="credit">made by m00n</div><button class="tgear" id="tgear" aria-label="선생님 설정" tabindex="-1"></button>' });
   $('#tgear').onclick = openTeacherGate;
 }
@@ -3116,11 +3135,21 @@ function scale2x(src) {
   }
   g.putImageData(im, 0, 0); return c;
 }
+// 인물 발밑 그림자: 스프라이트의 실제 발 위치를 찾아 바로 그 아래에 붙인다 (허공에 뜬 느낌 방지)
+const FOOT = {};
+function footRow(n, dir, f) {
+  const k = n + dir + f; if (FOOT[k] !== undefined) return FOOT[k];
+  const c = LOOKS[n][dir][f], d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data; let b = c.height - 1;
+  for (let y = c.height - 1; y >= 0; y--) { let hit = false; for (let x = 0; x < c.width; x++) if (d[(y * c.width + x) * 4 + 3]) { hit = true; break; } if (hit) { b = y; break; } }
+  return (FOOT[k] = b);
+}
 const look = (n, x, y, dir = 'down', f = 0, s = 1) => {
+  const fy = y + (footRow(n, dir, f) + 1) * s;
+  px('rgba(30,20,20,.28)', x + 3 * s, fy - s, 10 * s, 2 * s); px('rgba(30,20,20,.18)', x + 2 * s, fy - Math.round(s / 2), 12 * s, s);
   if (s === 2) { const k = n + dir + f; G.drawImage(HD[k] || (HD[k] = scale2x(LOOKS[n][dir][f])), x, y); }
   else G.drawImage(LOOKS[n][dir][f], x, y, 16 * s, 24 * s);
 };
-const sh = (x, y, w = 20) => px('rgba(0,0,0,.25)', x, y, w, 3);
+const sh = () => {}; // 그림자는 look()이 발밑에 직접 그린다
 function twinkle(x, y, t, i = 0, c = '255,250,210') { const a = (Math.sin(t * 3 + i * 1.9) + 1) / 2, s = 1 + Math.round(a * 2); px(`rgba(${c},${.35 + a * .65})`, x - s, y, 2 * s + 1, 1); px(`rgba(${c},${.35 + a * .65})`, x, y - s, 1, 2 * s + 1); }
 function glow(x, y, r, a, c = '255,240,150') { for (let j = -r; j <= r; j++) for (let i = -r; i <= r; i++) { const d = i * i + j * j; if (d <= r * r && (i + j) % 2 === 0) px(`rgba(${c},${a * (1 - d / (r * r + 1))})`, x + i, y + j); } }
 // 맵 타일을 2배로: 벽 두 줄 + 바닥 한 줄
