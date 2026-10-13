@@ -299,6 +299,7 @@ summary{cursor:pointer;opacity:.85}
 .panel.title .mbtn.sel,.panel.title .mbtn:hover{background:none;color:#ffd23f}
 .panel.title .mbtn.sel::before{left:calc(var(--p) * 1)}
 .panel.sub .mlist{margin-top:calc(var(--p) * 2)}
+.mbtn{word-break:keep-all}
 </style>
 </head>
 <body>
@@ -1988,7 +1989,7 @@ function openSlots(kind) {
       <p class="note" style="text-align:center">${kind === 'save' ? '어느 칸에 적어 둘까요? 이미 적힌 칸을 고르면 새로 덮어써요.' : '이어서 할 기록을 골라요.'}</p>
       <div class="slotlist">${sl.map((x, i) => `<button class="mbtn slot3" data-i="${i}" ${kind === 'load' && !x ? 'disabled' : ''}>${slotLabel(x, i)}</button>`).join('')}</div>
       <div class="qmsg" id="smsg"></div>
-      <div class="erow">${kind === 'load' ? '<button class="mbtn" id="sdel">선택한 기록 지우기</button>' : ''}<button class="mbtn" id="sback">닫기</button></div></div>`, {
+      <div class="erow">${kind === 'load' ? '<button class="mbtn" id="sdel">기록 지우기</button>' : ''}<button class="mbtn" id="sback">닫기</button></div></div>`, {
       onKey: e => { if (e.key === 'Escape') { finish(false); return true; } return false; } });
     const btns = [...el.querySelectorAll('.slot3')], msg = el.querySelector('#smsg');
     const finish = v => { if (done) return; done = true; closeModal(); res(v); };
