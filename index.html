@@ -37,8 +37,9 @@ button{font-family:inherit}
 /* ---- HUD (천장 띠 안) ---- */
 #hud{position:absolute;top:calc(var(--p) * 2);left:calc(var(--p) * 3);right:calc(var(--p) * 3);height:calc(var(--p) * 12);display:flex;gap:calc(var(--p) * 2);font-family:'Galmuri7','Galmuri9',monospace;font-size:calc(var(--u) * 8px);pointer-events:none;z-index:2}
 #hud .chip{display:flex;align-items:center;padding:0 calc(var(--p) * 5);white-space:nowrap}
-#hud .sp{flex:1}
-.hbtn{pointer-events:auto;color:var(--text);font:inherit;padding:0 calc(var(--p) * 5);cursor:pointer}
+#hud .sp{flex:1 1 0;min-width:0}
+#hud .chip{flex:0 1 auto;min-width:0;overflow:hidden}
+.hbtn{pointer-events:auto;color:var(--text);font:inherit;line-height:1;white-space:nowrap;flex:none;padding:0 calc(var(--p) * 4);cursor:pointer}
 .hbtn:hover{color:var(--accent)}
 #toast{position:absolute;left:50%;top:calc(var(--p) * 54);transform:translateX(-50%);padding:calc(var(--p) * 3) calc(var(--p) * 8);font-size:var(--f);opacity:0;pointer-events:none;z-index:5;white-space:nowrap;color:var(--accent)}
 #toast.show{opacity:1}
